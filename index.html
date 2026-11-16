@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0e5a4a" />
+    <title>Registro de goteros · Foto → Excel</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230e5a4a'/><path fill='white' d='M50 14C42 26 27 46 27 60a23 23 0 0 0 46 0c0-14-15-34-23-46Z'/></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <span class="stamp" aria-label="Logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12 2.5c-.4 0-.7.2-.9.5C9.4 5.6 5.5 10.9 5.5 14.5a6.5 6.5 0 0 0 13 0c0-3.6-3.9-8.9-5.6-11.5-.2-.3-.5-.5-.9-.5Zm-3 12.2c.4 0 .8.3.8.8 0 1.2 1 2.2 2.2 2.2.4 0 .8.3.8.8s-.4.8-.8.8a3.8 3.8 0 0 1-3.8-3.8c0-.5.4-.8.8-.8Z"/></svg></span>
+        <div>
+          <h1>Registro de goteros</h1>
+          <p>Fechas de fabricación · Foto → Excel</p>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button role="tab" class="tab active" data-tab="capturar">Capturar</button>
+        <button role="tab" class="tab" data-tab="hoja">Hoja Excel <span id="count-badge" class="badge">0</span></button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- CAPTURAR -->
+      <section id="panel-capturar" class="panel active">
+        <div class="step" id="step-fotos">
+          <div class="step-head"><span class="num">1</span><h2>Fotografía las hojas</h2></div>
+          <p class="hint">Encuadra la hoja completa, con buena luz y sin sombras. Puedes hacer varias fotos seguidas.</p>
+          <div class="actions">
+            <label class="btn primary big">
+              <input id="in-camera" type="file" accept="image/*" capture="environment" hidden />
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l1.5 2H20a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h3.5L9 4Zm3 4.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Zm0 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"/></svg>
+              Hacer foto
+            </label>
+            <label class="btn ghost big">
+              <input id="in-gallery" type="file" accept="image/*" multiple hidden />
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm1 2v8.6l4-4 3 3 2-2 5 5V7H5Zm10.5 1a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg>
+              Galería
+            </label>
+          </div>
+          <ul id="thumbs" class="thumbs"></ul>
+          <button id="btn-leer" class="btn accent wide" disabled>Leer fotos con IA</button>
+        </div>
+
+        <div class="step" id="step-revisar" hidden>
+          <div class="step-head"><span class="num">2</span><h2>Revisa los datos</h2></div>
+          <p class="hint">Corrige lo que haga falta. Las filas marcadas con <b class="warn-dot"></b> tienen dudas de lectura.</p>
+          <div id="review"></div>
+          <button id="btn-add-row" class="btn ghost wide">+ Añadir fila manual</button>
+        </div>
+      </section>
+
+      <!-- HOJA -->
+      <section id="panel-hoja" class="panel">
+        <div class="sheet-bar">
+          <div>
+            <h2>Hoja de registro</h2>
+            <p class="hint" id="sheet-summary">Cargando…</p>
+          </div>
+          <a id="btn-excel" class="btn accent" href="/api/excel" download>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2ZM4 19h16v2H4v-2Z"/></svg>
+            Descargar .xlsx
+          </a>
+        </div>
+        <input id="search" class="search" type="search" placeholder="Buscar gotero, lote, fecha…" />
+        <div class="sheet-wrap">
+          <table class="sheet">
+            <thead>
+              <tr>
+                <th>Nº</th><th>Hoja</th><th>Descripción</th><th>Fecha caja</th><th>Hora</th>
+                <th>F. fabricación</th><th>Lote / Attention</th><th>Cajas</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="sheet-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="savebar" id="savebar" hidden>
+      <span id="save-info">0 filas</span>
+      <button id="btn-save" class="btn primary">Añadir al Excel</button>
+    </footer>
+
+    <div id="toast" class="toast" role="status"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
